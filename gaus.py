@@ -3,14 +3,15 @@ import numpy as np
 
 def get(c):
     c = c%4
-    return chr(c+ 97)
+    index_char = ['A','C', 'G', 'U']
+    return index_char[c]
 # Define parameters
 num_states = 4  # Number of nucleotide states
 num_neighbors = 3  # Number of neighbors (including central position)
 
 # Define standard deviations for sampling
-sigma1 = 0.01
-sigma2 = 0.001
+sigma1 = 0.1
+sigma2 = 0.01
 
 # Generate random values for the energy matrix
 energy_matrix = {}
@@ -32,13 +33,10 @@ for s_star_i in range(num_states):
 # Print the energy matrix
 ct =0
 for s_is in range(4):
-    print(f"\ns_i* {get(s_is)}    s_i*+-1 = { get(s_is +1 )}           s_i*+-1 = {get(s_is+2)}         s_i*+-1 = {get(s_is+3)}           s_i*+-1 = {get(s_is)}")
+    print(f"\n\ns_i* {get(s_is)}  s_i*+-1 = { get(s_is +1 )}     s_i*+-1 = {get(s_is+2)}     s_i*+-1 = {get(s_is+3)}     s_i*+-1 = {get(s_is)}")
     for s_i in range(4):
         if s_i == s_is:
             continue # same thing energy zero
-        print(f'\ns_i = {get(s_i)}    ', end= "")
+        print(f'\ns_i = {get(s_i)}', end= "    ")
         for s_i_n in range(4):
-            print(round(energy_matrix[(s_i, s_i, s_i_n)],3),end= "      ")
-
-
-print(energy_matrix[(0,1,2)])
+            print(round(energy_matrix[(s_i, s_i, s_i_n)],6),end= "      ")
