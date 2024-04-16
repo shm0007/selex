@@ -3,7 +3,7 @@ import numpy as np
 
 
 #sequence length
-L = 13 
+L = 20 
 # Number of nucleotide states
 num_states = 4  
 
@@ -22,6 +22,7 @@ energy_mat_2nd = {}
 for s_star_i in range(num_states):
     for s_i in range(num_states):
         for s_star_neighbor in range(num_states):
+            print('asd')
             # Generate random value from Gaussian distribution
             energy1 = np.random.normal(0, sigma1)
             energy2 = np.random.normal(0, sigma2)
@@ -36,6 +37,12 @@ for s_star_i in range(num_states):
 
 # Define functions to calculate each effect
 def direct_interaction_effect(s, s_star):
+    # print(s)
+    # print(s_star)
+    # print( isinstance(s,np.ndarray))
+    # print( isinstance(s_star,np.ndarray))
+    
+
     return np.sum(1 - np.equal(s, s_star))
 
 def right_neighbor_effect(s, s_star):
@@ -78,10 +85,10 @@ def calculate_fitness(s, s_star):
     return fitness
 
 # Example genotype and target genotype (s and s_star)
-s = string_to_list('UCUAAGGCAGUAU')
-s_star = string_to_list('CUGACUGAACGUU')
+#s = string_to_list('UCUAAGGCAGUAU')
+#s_star = string_to_list('CUGACUGAACGUU')
 
 # Calculate fitness using Equation 10
-fitness = calculate_fitness(s, s_star)
-print("Fitness:", fitness)
+#fitness = calculate_fitness(s, s_star)
+#print("Fitness:", fitness)
 
