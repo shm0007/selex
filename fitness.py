@@ -22,7 +22,6 @@ energy_mat_2nd = {}
 for s_star_i in range(num_states):
     for s_i in range(num_states):
         for s_star_neighbor in range(num_states):
-            print('asd')
             # Generate random value from Gaussian distribution
             energy1 = np.random.normal(0, sigma1)
             energy2 = np.random.normal(0, sigma2)
