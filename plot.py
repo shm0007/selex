@@ -15,8 +15,8 @@ def plot_line_graph(x_values, y_values,label):
     plt.plot(x_values, y_values,label = label)
 
 y_values =  [i for i in range(60)]
-x_best = read_csv('best_csv.csv')
-x_avg = read_csv('avg_csv.csv')
+x_best = read_csv('best_csv_500_1713921828.csv')
+x_avg = read_csv('average_csv_500_1713921828.csv')
 print(x_avg)
 print(x_best)
 plot_line_graph(y_values, x_best, 'Best')
@@ -24,7 +24,7 @@ plot_line_graph(y_values, x_avg,'Avg')
 
 plt.xlabel('Generations')
 plt.ylabel('Fitness')
-plt.title('Best and Average for UGCUAGAAAGCAUGCGGGGA')
+plt.title('Best and Average for AAAAAAAAAAAAAAAAAAAA')
 plt.grid(True)
 plt.legend()
 plt.show()
