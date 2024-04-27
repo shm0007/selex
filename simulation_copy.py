@@ -3,8 +3,21 @@ import numpy as np
 import csv
 
 import time
+from energy_matrix import get_energy_matrices
 # Constants
 ALPHABET = ['A', 'G', 'C', 'U']
+gene_to_index = {'A': 0, 'C': 1, 'G': 2, 'U': 3}
+# gene_to_index = [0] * 128
+# gene_to_index[ord('A')] = 0
+# gene_to_index[ord('C')] = 1
+# gene_to_index[ord('G')] = 2
+# gene_to_index[ord('U')] = 3
+# gene_to_index[1] = 1
+# gene_to_index[2] = 2
+# gene_to_index[3] = 3
+
+
+
 GENOTYPE_LENGTH = 20
 POPULATION_SIZE = 10
 MAX_ROUNDS = 60
@@ -26,25 +39,10 @@ sigma2 = 0.01
 
 
 # energy matrix for first neighbor
-energy_mat_1st = {}
+energy_mat_1st, energy_mat_2nd =  get_energy_matrices(num_states,sigma1,sigma2)
 
-# energy matrix for second neighbor
-energy_mat_2nd = {}
 
 #calculating energy matrices
-for s_star_i in range(num_states):
-    for s_i in range(num_states):
-        for s_star_neighbor in range(num_states):
-            # Generate random value from Gaussian distribution
-            energy1 = np.random.normal(0, sigma1)
-            energy2 = np.random.normal(0, sigma2)
-            
-            
-            if s_i == s_star_i:
-                energy = 0
-            # Store energy value in the energy matrix
-            energy_mat_1st[((s_star_i), (s_i), (s_star_neighbor))] = energy1
-            energy_mat_2nd[((s_star_i), (s_i), (s_star_neighbor))] = energy2
 
 
 # Define functions to calculate each effect
@@ -55,11 +53,13 @@ def right_neighbor_effect(s, s_star):
     effect = 0
     for i in range(L):
         if i< L-1:
-            effect += energy_mat_1st[(s_star[i],s[i], s_star[i+1])]
-            effect -= energy_mat_1st[(s[i],s_star[i], s[i+1])]
+            # effect += energy_mat_1st[(s_star[i],s[i], s_star[i+1])]
+            # effect -= energy_mat_1st[(s[i],s_star[i], s[i+1])]
+            effect += energy_mat_1st[s_star[i]][s[i]][s_star[i+1]]
+            effect -= energy_mat_1st[s[i]][s_star[i]][ s[i+1]]
         if i < L-2:
-            effect += energy_mat_2nd[(s_star[i],s[i], s_star[i+2])]
-            effect -= energy_mat_2nd[(s[i],s_star[i], s[i+2])]
+            effect += energy_mat_2nd[s_star[i]][s[i]][ s_star[i+2]]
+            effect -= energy_mat_2nd[s[i]][s_star[i]][s[i+2]]
     return effect
 
 
@@ -67,18 +67,18 @@ def left_neighbor_effect(s, s_star):
     effect = 0
     for i in range(L):
         if i-1 >= 0:
-            effect += energy_mat_1st[(s_star[i],s[i], s_star[i-1])]
-            effect -= energy_mat_1st[(s[i],s_star[i], s[i-1])]
+            effect += energy_mat_1st[s_star[i]][s[i]][s_star[i-1]]
+            effect -= energy_mat_1st[s[i]][s_star[i]][ s[i-1]]
         if i -2 >=0:
-            effect += energy_mat_2nd[(s_star[i],s[i], s_star[i-2])]
-            effect -= energy_mat_2nd[(s[i],s_star[i], s[i-2])]
+            effect += energy_mat_2nd[s_star[i]][s[i]][ s_star[i-2]]
+            effect -= energy_mat_2nd[s[i]][s_star[i]][s[i-2]]
+
     return effect
 
 def string_to_list(genome_string):
 
-    char_to_index = {'A': 0, 'C': 1, 'G': 2, 'U': 3}
     
-    genome_list = [char_to_index[char] for char in genome_string]
+    genome_list = [gene_to_index[char] for char in genome_string]
     
     return np.array(genome_list)
 
@@ -94,15 +94,15 @@ def calculate_fitness(s, s_star):
 
 def string_to_list(genome_string):
 
-    char_to_index = {'A': 0, 'C': 1, 'G': 2, 'U': 3}
+    gene_to_index = {'A': 0, 'C': 1, 'G': 2, 'U': 3}
     
-    genome_list = [char_to_index[char] for char in genome_string]
+    genome_list = [gene_to_index[char] for char in genome_string]
     
     return np.array(genome_list)
 # Generate random genotype
 def generate_genotype():
-    char_to_index = {'A': 0, 'C': 1, 'G': 2, 'U': 3}
-    genome_list =  [char_to_index[random.choice(ALPHABET)] for _ in range(GENOTYPE_LENGTH)]
+    gene_to_index = {'A': 0, 'C': 1, 'G': 2, 'U': 3}
+    genome_list =  [gene_to_index[random.choice(ALPHABET)] for _ in range(GENOTYPE_LENGTH)]
     return np.array(genome_list)
 
 # Selection function
@@ -123,13 +123,13 @@ def selection(population, sample):
 
 # Mutation function
 def mutate(genotype):
-    char_to_index = {'A': 0, 'C': 1, 'G': 2, 'U': 3}
+    gene_to_index = {'A': 0, 'C': 1, 'G': 2, 'U': 3}
     mutated_genotype = []
     for base in genotype:
         if random.random() < MUTATION_RATE:
-            mutated_base = char_to_index[random.choice(ALPHABET)]
+            mutated_base = gene_to_index[random.choice(ALPHABET)]
             while mutated_base == base:
-                mutated_base = char_to_index[random.choice(ALPHABET)]
+                mutated_base = gene_to_index[random.choice(ALPHABET)]
             mutated_genotype.append(mutated_base)
         else:
             mutated_genotype.append(base)
