@@ -5,16 +5,16 @@ import csv
 import time
 from energy_matrix import get_energy_matrices
 # Constants
-ALPHABET = ['A', 'G', 'C', 'U']
-gene_to_index = {'A': 0, 'C': 1, 'G': 2, 'U': 3}
-# gene_to_index = [0] * 128
-# gene_to_index[ord('A')] = 0
-# gene_to_index[ord('C')] = 1
-# gene_to_index[ord('G')] = 2
-# gene_to_index[ord('U')] = 3
-# gene_to_index[1] = 1
-# gene_to_index[2] = 2
-# gene_to_index[3] = 3
+
+#gene_to_index = {'A': 0, 'C': 1, 'G': 2, 'U': 3}
+gene_to_index = [0] * 128
+gene_to_index[ord('A')] = 0
+gene_to_index[ord('G')] = 1
+gene_to_index[ord('C')] = 2
+gene_to_index[ord('U')] = 3
+gene_to_index[1] = 1
+gene_to_index[2] = 2
+gene_to_index[3] = 3
 
 
 
@@ -28,8 +28,6 @@ average = 0
 best = 100
 
 
-#sequence length
-L = 20 
 # Number of nucleotide states
 num_states = 4  
 
@@ -51,13 +49,13 @@ def direct_interaction_effect(s, s_star):
 
 def right_neighbor_effect(s, s_star):
     effect = 0
-    for i in range(L):
-        if i< L-1:
+    for i in range(GENOTYPE_LENGTH):
+        if i< GENOTYPE_LENGTH-1:
             # effect += energy_mat_1st[(s_star[i],s[i], s_star[i+1])]
             # effect -= energy_mat_1st[(s[i],s_star[i], s[i+1])]
             effect += energy_mat_1st[s_star[i]][s[i]][s_star[i+1]]
             effect -= energy_mat_1st[s[i]][s_star[i]][ s[i+1]]
-        if i < L-2:
+        if i < GENOTYPE_LENGTH-2:
             effect += energy_mat_2nd[s_star[i]][s[i]][ s_star[i+2]]
             effect -= energy_mat_2nd[s[i]][s_star[i]][s[i+2]]
     return effect
@@ -65,7 +63,7 @@ def right_neighbor_effect(s, s_star):
 
 def left_neighbor_effect(s, s_star):
     effect = 0
-    for i in range(L):
+    for i in range(GENOTYPE_LENGTH):
         if i-1 >= 0:
             effect += energy_mat_1st[s_star[i]][s[i]][s_star[i-1]]
             effect -= energy_mat_1st[s[i]][s_star[i]][ s[i-1]]
@@ -75,12 +73,7 @@ def left_neighbor_effect(s, s_star):
 
     return effect
 
-def string_to_list(genome_string):
 
-    
-    genome_list = [gene_to_index[char] for char in genome_string]
-    
-    return np.array(genome_list)
 
 # Define fitness calculation function using Equation 10
 def calculate_fitness(s, s_star):
@@ -92,17 +85,15 @@ def calculate_fitness(s, s_star):
     return fitness
 
 
-def string_to_list(genome_string):
-
-    gene_to_index = {'A': 0, 'C': 1, 'G': 2, 'U': 3}
-    
-    genome_list = [gene_to_index[char] for char in genome_string]
-    
+# Takes a string as input and returns numpy array of genotype
+# string_to_genotype("ACGU") -> [0,1,2,3]
+def string_to_genotype(genome_string):
+    genome_list = [gene_to_index[ord(char)] for char in genome_string]
     return np.array(genome_list)
+
 # Generate random genotype
 def generate_genotype():
-    gene_to_index = {'A': 0, 'C': 1, 'G': 2, 'U': 3}
-    genome_list =  [gene_to_index[random.choice(ALPHABET)] for _ in range(GENOTYPE_LENGTH)]
+    genome_list =  [gene_to_index[random.randint(0,3)] for _ in range(GENOTYPE_LENGTH)]
     return np.array(genome_list)
 
 # Selection function
@@ -123,13 +114,12 @@ def selection(population, sample):
 
 # Mutation function
 def mutate(genotype):
-    gene_to_index = {'A': 0, 'C': 1, 'G': 2, 'U': 3}
     mutated_genotype = []
     for base in genotype:
         if random.random() < MUTATION_RATE:
-            mutated_base = gene_to_index[random.choice(ALPHABET)]
+            mutated_base = gene_to_index[random.randint(0,3)]
             while mutated_base == base:
-                mutated_base = gene_to_index[random.choice(ALPHABET)]
+                mutated_base = gene_to_index[random.randint(0,3)]
             mutated_genotype.append(mutated_base)
         else:
             mutated_genotype.append(base)
@@ -179,6 +169,6 @@ def evolutionary_algorithm(sample):
 
 
 # Run evolutionary algorithm
-sample = string_to_list('UGCUAGAAAGCAUGCGGGGA')
+sample = string_to_genotype('UGCUAGAAAGCAUGCGGGGA')
 evolutionary_algorithm(sample)
 
