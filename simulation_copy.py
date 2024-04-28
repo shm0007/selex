@@ -19,7 +19,7 @@ gene_to_index[3] = 3
 
 
 GENOTYPE_LENGTH = 20
-POPULATION_SIZE = 500
+POPULATION_SIZE = 10
 MAX_ROUNDS = 60
 MUTATION_RATE = 0.0001
 NUM_RUNS = 100
@@ -156,8 +156,8 @@ def evolutionary_algorithm(sample):
             avg_avg[runs-1].append(average/POPULATION_SIZE)
             #print("Round: ", runs, "Average:", average/POPULATION_SIZE, "Best Fitness:", best)
 
-    best_name = 'data/best_csv_' + str(POPULATION_SIZE) +"_" +  str(before) + ".csv"
-    avg_name = 'data/average_csv_' + str(POPULATION_SIZE) +"_" +  str(before) + ".csv"
+    best_name = 'best_csv_' + str(POPULATION_SIZE) +"_" +  str(before) + ".csv"
+    avg_name = 'average_csv_' + str(POPULATION_SIZE) +"_" +  str(before) + ".csv"
     print('Total Time ' + str(int(time.time()) - before) )
     with open( best_name, "w", newline="") as csvfile:
         csvwriter = csv.writer(csvfile)
