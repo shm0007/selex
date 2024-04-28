@@ -1,5 +1,4 @@
 import random
-import numpy as np
 import csv
 
 import time
@@ -19,7 +18,7 @@ gene_to_index[3] = 3
 
 
 GENOTYPE_LENGTH = 20
-POPULATION_SIZE = 500
+POPULATION_SIZE = 501
 MAX_ROUNDS = 60
 MUTATION_RATE = 0.0001
 NUM_RUNS = 100
@@ -45,7 +44,12 @@ energy_mat_1st, energy_mat_2nd =  get_energy_matrices(num_states,sigma1,sigma2)
 
 # Define functions to calculate each effect
 def direct_interaction_effect(s, s_star):
-        return np.sum(1 - np.equal(s, s_star))
+        count = 0
+        for i in range (len(s)):
+            if s[i] != s_star[i]:
+                count+=1
+        return count
+        #return np.sum(1 - np.equal(s, s_star))
 
 def right_neighbor_effect(s, s_star):
     effect = 0
@@ -77,7 +81,6 @@ def left_neighbor_effect(s, s_star):
 
 # Define fitness calculation function using Equation 10
 def calculate_fitness(s, s_star):
-    global average
     direct_effect = direct_interaction_effect(s,s_star)
     right_effect = right_neighbor_effect(s,s_star)
     left_effect = left_neighbor_effect(s,s_star)
@@ -89,16 +92,16 @@ def calculate_fitness(s, s_star):
 # string_to_genotype("ACGU") -> [0,1,2,3]
 def string_to_genotype(genome_string):
     genome_list = [gene_to_index[ord(char)] for char in genome_string]
-    return np.array(genome_list)
+    return (genome_list)
 
 # Generate random genotype
 def generate_genotype():
     genome_list =  [gene_to_index[random.randint(0,3)] for _ in range(GENOTYPE_LENGTH)]
-    return np.array(genome_list)
+    return (genome_list)
 
 # Selection function
 def selection(population, sample):
-    global average
+    average = 0
     selected_population = []
     for _ in range(len(population)):
         contenders = random.sample(population, 2)
@@ -110,7 +113,7 @@ def selection(population, sample):
             selected_population.append(contenders[0])
         else:
             selected_population.append(contenders[1])
-    return (selected_population)
+    return selected_population, average/len(population)
 
 # Mutation function
 def mutate(genotype):
@@ -123,12 +126,11 @@ def mutate(genotype):
             mutated_genotype.append(mutated_base)
         else:
             mutated_genotype.append(base)
-    return np.array(mutated_genotype)
+    return (mutated_genotype)
 
 # Evolutionary algorithm
 def evolutionary_algorithm(sample):
-    global average
-    global best
+
     runs = 0
     result_avg = [[] for _ in range(61)]
     avg_avg = [[] for _ in range(61)]
@@ -138,12 +140,10 @@ def evolutionary_algorithm(sample):
             print(f'Running run {i+1}')
         population = [generate_genotype() for _ in range(POPULATION_SIZE)]
         runs = 0
-        average = 0
         best = 10000
         for _ in range(MAX_ROUNDS):
             runs+=1
-            average = 0
-            population = selection(population, sample)
+            population,average = selection(population, sample)
             population = [mutate(genotype) for genotype in population]
             best_genotype = min(population, key=lambda x: calculate_fitness(x, sample))
 
@@ -153,7 +153,7 @@ def evolutionary_algorithm(sample):
             best = min(best, best_fitness)
             result_avg[runs-1].append(best)
             
-            avg_avg[runs-1].append(average/POPULATION_SIZE)
+            avg_avg[runs-1].append(average)
             #print("Round: ", runs, "Average:", average/POPULATION_SIZE, "Best Fitness:", best)
 
     best_name = 'data/best_csv_' + str(POPULATION_SIZE) +"_" +  str(before) + ".csv"
