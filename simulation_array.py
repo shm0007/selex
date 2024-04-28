@@ -1,6 +1,6 @@
 import random
 import csv
-
+import concurrent.futures
 import time
 from energy_matrix import get_energy_matrices
 # Constants
@@ -18,31 +18,26 @@ gene_to_index[3] = 3
 
 
 GENOTYPE_LENGTH = 20
-POPULATION_SIZE = 501
+POPULATION_SIZE = 500
 MAX_ROUNDS = 60
 MUTATION_RATE = 0.0001
 NUM_RUNS = 100
 
-average = 0
-best = 100
 
 
-# Number of nucleotide states
+# Total Number of nucleotide states (A,C,G,U)
 num_states = 4  
 
-# Define standard deviations for sampling
+# standard deviations for sampling, sigma1 is for first neighbor, sigma2 is for second neighbor
 sigma1 = 0.1
 sigma2 = 0.01
 
 
-# energy matrix for first neighbor
+# energy matrix for first neighbor and second neighbor effect
 energy_mat_1st, energy_mat_2nd =  get_energy_matrices(num_states,sigma1,sigma2)
 
 
-#calculating energy matrices
-
-
-# Define functions to calculate each effect
+# Function to find direct interactor effect
 def direct_interaction_effect(s, s_star):
         count = 0
         for i in range (len(s)):
@@ -136,12 +131,13 @@ def evolutionary_algorithm(sample):
     avg_avg = [[] for _ in range(61)]
     before = int(time.time())
     for i in range(NUM_RUNS):
-        if i%10 == 0:
+        if(i%10 == 0):
             print(f'Running run {i+1}')
         population = [generate_genotype() for _ in range(POPULATION_SIZE)]
         runs = 0
         best = 10000
         for _ in range(MAX_ROUNDS):
+            
             runs+=1
             population,average = selection(population, sample)
             population = [mutate(genotype) for genotype in population]
@@ -154,8 +150,6 @@ def evolutionary_algorithm(sample):
             result_avg[runs-1].append(best)
             
             avg_avg[runs-1].append(average)
-            #print("Round: ", runs, "Average:", average/POPULATION_SIZE, "Best Fitness:", best)
-
     best_name = 'data/best_csv_' + str(POPULATION_SIZE) +"_" +  str(before) + ".csv"
     avg_name = 'data/average_csv_' + str(POPULATION_SIZE) +"_" +  str(before) + ".csv"
     print('Total Time ' + str(int(time.time()) - before) )
