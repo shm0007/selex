@@ -1,5 +1,11 @@
 # Simulating Chemical Evolution
-This repositority implements the algorithm described by In Soo Oh, Yuu-Geun Lee and RI McKay in their paper "Simulating Chemical Evolution" [Paper Link](https://ieeexplore.ieee.org/document/5949958)
+This repositority implements the algorithm described by In Soo Oh, Yuu-Geun Lee and RI McKay in their paper "Simulating Chemical Evolution" [Paper Link](https://ieeexplore.ieee.org/document/5949958) 
+
+# Contents
+- energy_matrix.py: An implementation of calculating energy matrix described in the paper.
+- simulation.py: This Python script runs the evolutionary algorithm described in the paper.
+- simulation-threads.py: An alternative version of the code with multithreading capabilities.
+
 # Usage
 ```bash
 python simulation.py <POPULATION_SIZE> <TOTAL_GENERATION> <TOTAL_ROUND> <NEIGHBOR_EFFECT>
