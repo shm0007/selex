@@ -137,7 +137,7 @@ def evolutionary_algorithm(target_string):
     average_fitnesses = [[] for _ in range(MAX_ROUNDS)]
 
     start_time = int(time.time()) #timestamp to calculate total time, and to provide unique name for the file
-    for i in range(NUM_RUNS):
+    def run_instance(i):
         
         if(i%10 == 0):
             print(f'Running run {i+1}')
@@ -155,7 +155,9 @@ def evolutionary_algorithm(target_string):
 
             best_fitnesses[round].append(best)
             average_fitnesses[round].append(average)
-    
+            
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        executor.map(run_instance, range(NUM_RUNS))
     print('Total Time ' + str(int(time.time()) - start_time) )
 
 
@@ -183,7 +185,7 @@ def main(argv):
     if len(argv) != 5:
         # Print an error message and usage instructions if not enough arguments are provided
         print("Error: Not enough arguments!")
-        print("Usage: python simulation.py <population> <generation> <total_run> <neighbor_effect>")
+        print("Usage: python simulation-threads.py <population> <generation> <total_run> <neighbor_effect>")
         return 1
     global POPULATION_SIZE
     global MAX_ROUNDS
@@ -195,8 +197,8 @@ def main(argv):
     MAX_ROUNDS = int(argv[2])
     NUM_RUNS = int(argv[3])
     NEIGHBOR_EFFECT = int(argv[4])
-
-   #Creating a figure to draw our lines
+    
+    #Creating a figure to draw our lines
     plt.figure(figsize=(16, 9)) 
 
     #Call Evolutionary algorithm  with the seven target strings mentioned in paper
