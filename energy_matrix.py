@@ -9,7 +9,7 @@ def get_energy_matrices(num_states,sigma1, sigma2):
         for s_i in range(num_states):
             for s_star_neighbor in range(num_states):
 
-                # Generate random value from Gaussian distribution
+                # Generate random value from Gaussian distribution with mean 0 and SD sigma1/ sigma2
                 energy1 = np.random.normal(0, sigma1)
                 energy2 = np.random.normal(0, sigma2)
                 
